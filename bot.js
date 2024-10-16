@@ -1,6 +1,7 @@
 const TelegramApi = require('node-telegram-bot-api')
 
 const {gameOptions, againOptions} = require('./modul')
+
 const token = '7561960417:AAHidPdVo-fj6FpeAkLcNO0GdXs3Z88WJWg'
 
 const bot = new TelegramApi(token, {polling: true})
@@ -12,9 +13,7 @@ const startGame = async (chatId) => {
         chats[chatId] = randNum;
         await bot.sendMessage(chatId, 'Отгадывай!', gameOptions)
 }
-app.listen(port, () => {
-    console.log(`${port}`)
-})
+
 const start = () => {
     //commands
     bot.setMyCommands([
