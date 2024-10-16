@@ -1,5 +1,6 @@
 const TelegramApi = require('node-telegram-bot-api')
 
+const {gameOptions, againOptions} = require('./modul')
 const token = '7561960417:AAHidPdVo-fj6FpeAkLcNO0GdXs3Z88WJWg'
 
 const bot = new TelegramApi(token, {polling: true})
@@ -11,31 +12,16 @@ const startGame = async (chatId) => {
         chats[chatId] = randNum;
         await bot.sendMessage(chatId, 'Отгадывай!', gameOptions)
 }
-
-const gameOptions = {
-    reply_markup: JSON.stringify({
-        inline_keyboard: [
-            [{text: '1', callback_data: '1'}, {text: '2', callback_data: '2'}, {text: '3', callback_data: '3'}],
-            [{text: '4', callback_data: '4'}, {text: '5', callback_data: '5'}, {text: '6', callback_data: '6'}],
-            [{text: '7', callback_data: '7'}, {text: '8', callback_data: '8'}, {text: '9', callback_data: '9'}],
-            [{text: '0', callback_data: '0'}]
-        ]
-    })
-}
-const againOptions = {
-    reply_markup: JSON.stringify({
-        inline_keyboard: [
-            [{text: 'играть снова', callback_data: '/again'}]
-        ]
-    })
-}
-
+app.listen(port, () => {
+    console.log(`${port}`)
+})
 const start = () => {
     //commands
     bot.setMyCommands([
         {command: '/start', description: 'Вход в хату'},
-        {command: '/info', description: 'username(@), name and family'},
-        {command: '/game', description: 'угадай число'}
+        {command: '/info', description: 'Username(@), name and family'},
+        {command: '/game', description: 'Угадай число'},
+        {command: '/poldnik', description: 'Время полдника! Ном-ном'}
     ])
     //command create 
     bot.on('message', async msg => {
@@ -43,22 +29,38 @@ const start = () => {
         const chatId = msg.chat.id;
     //command called
     //start
-        if(text === '/start') {
+        if(text === '/start' || text === '/start@IlnurGoida_bot') {
            await bot.sendMessage(chatId, `Вечер в хату!`);
+           //return console.log(msg);
         }
     //info
-        if(text === '/info' && msg.chat.last_name !== undefined) {
-            await console.log(msg)
-            return bot.sendMessage(chatId, `username:  @${msg.chat.username}, name:  ${msg.chat.first_name}, family: ${msg.chat.last_name}`)
+        if(text === '/info' && msg.from.last_name !== undefined) {
+            //await console.log(msg)
+            return bot.sendMessage(chatId, `username:  @${msg.from.username}, name:  ${msg.from.first_name}, family: ${msg.from.last_name}`)
         }
-        else if(text === '/info' && msg.chat.last_name === undefined){
-            return bot.sendMessage(chatId, `username:  @${msg.chat.username}, nik:  ${msg.chat.first_name}`)
+        else if(text === '/info@IlnurGoida_bot' && msg.from.last_name !== undefined) {
+            return bot.sendMessage(chatId, `username:  @${msg.from.username}, name:  ${msg.from.first_name}, family: ${msg.from.last_name}`)
+        }
+
+
+        else if(text === '/info' || text === '/info@IlnurGoida_bot'  && msg.from.last_name === undefined){
+            return bot.sendMessage(chatId, `username:  @${msg.from.username}, nik:  ${msg.from.first_name}`)
+        }
+        else if(text === '/info@IlnurGoida_bot'  && msg.from.last_name === undefined){
+            return bot.sendMessage(chatId, `username:  @${msg.from.username}, nik:  ${msg.from.first_name}`)
         }
     //game
-        if(text === '/game') {
+        if(text === '/game' || text === '/game@IlnurGoida_bot') {
+            bot.sendMessage(chatId, `${msg.from.first_name}, сейчас я загадаю цифру от 0 до 9, попробуй её отгадать `)
             return startGame(chatId);
+            //bot.deleteMessage(chatId, )
         }
-    
+    //полдник
+        if(text === '/poldnik' || text === '/полдник' || text === '/poldnik@IlnurGoida_bot') {
+            const rundMassaPoldnik = Math.floor(Math.random() * 25)
+            return bot.sendMessage(chatId, `Зачет, ${msg.from.first_name}! + ${rundMassaPoldnik} кг полдника!`);
+        }
+    //func end
     })
     
     bot.on('callback_query', msg => {
@@ -70,13 +72,14 @@ const start = () => {
     }
 
         if(data == chats[chatId]) {
-            return bot.sendMessage(chatId, `Поздравляю, ты отгодал цифру ${data}`, againOptions)
+            return bot.sendMessage(chatId, `Поздравляю, ${msg.from.first_name}, ты отгодал цифру ${data}`, againOptions)
         }
         else if(data != chats[chatId]){
-            return bot.sendMessage(chatId, `Ты не отгадал цифру, была загаданна ${chats[chatId]}`, againOptions)
+            return bot.sendMessage(chatId, `${msg.from.first_name}, ты не отгадал цифру, была загаданна ${chats[chatId]}`, againOptions)
         }
+         
     })
-    
+   
     //func end
 }
 
