@@ -1,11 +1,12 @@
 const TelegramApi = require('node-telegram-bot-api')
-
+const date = new Date();
+const hour = date.getHours();
 const {gameOptions, againOptions} = require('./modul')
 
 const token = '7561960417:AAHidPdVo-fj6FpeAkLcNO0GdXs3Z88WJWg'
 
 const bot = new TelegramApi(token, {polling: true})
-
+const port = 3000;
 const chats = {}
 
 const startGame = async (chatId) => {
@@ -56,8 +57,13 @@ const start = () => {
         }
     //полдник
         if(text === '/poldnik' || text === '/полдник' || text === '/poldnik@IlnurGoida_bot') {
-            const rundMassaPoldnik = Math.floor(Math.random() * 25)
-            return bot.sendMessage(chatId, `Зачет, ${msg.from.first_name}! + ${rundMassaPoldnik} кг полдника!`);
+            if(hour >= 12 && hour < 13) {
+                const rundMassaPoldnik = Math.floor(Math.random() * 25)
+                return bot.sendMessage(chatId, `Зачет, ${msg.from.first_name}! + ${rundMassaPoldnik} кг полдника!`);
+            }
+            else {
+                return bot.sendMessage(chatId, `Не зачет! Полдникать можно только с 12:00 до 13:00!`)
+            }
         }
     //func end
     })
@@ -74,7 +80,7 @@ const start = () => {
             return bot.sendMessage(chatId, `Поздравляю, ${msg.from.first_name}, ты отгодал цифру ${data}`, againOptions)
         }
         else if(data != chats[chatId]){
-            return bot.sendMessage(chatId, `${msg.from.first_name}, ты не отгадал цифру, была загаданна ${chats[chatId]}`, againOptions)
+            return bot.sendMessage(chatId, `@${msg.from.username} ${msg.from.first_name}, ты не отгадал цифру, была загаданна ${chats[chatId]}`, againOptions)
         }
          
     })
