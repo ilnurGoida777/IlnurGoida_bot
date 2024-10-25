@@ -1,20 +1,20 @@
-const express = require('express')
-const http = require('http');
+import express from 'express';
+import { createServer } from 'http';
 const host = 'localhost'
 const port = 5000;
 const requestListener = function(req, res) {req.writeHead(200); req.end("hi")}
-const server = http.createServer(requestListener);
+const server = createServer(requestListener);
 server.listen(port, host, () => {console.log(`server running on http://${host}:${port}`);});
 
 const app = express()
 app.listen(port, () => {
     console.log(`server started on port ${port}`)
 })
-const TelegramApi = require('node-telegram-bot-api')
+import TelegramApi from 'node-telegram-bot-api';
 const token = '7561960417:AAHidPdVo-fj6FpeAkLcNO0GdXs3Z88WJWg'
 const bot = new TelegramApi(token, {polling: true})
 
-const {gameOptions, againOptions, kmnOptions} = require('./modul')
+import { gameOptions, againOptions, kmnOptions } from './modul';
 const date = new Date();
 const hour = date.getHours();
 const chats = {}
